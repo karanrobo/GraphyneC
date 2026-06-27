@@ -12,13 +12,6 @@ typedef struct graph *Graph;
 typedef struct node *Adjnode; 
 typedef int Vertex;
 
-/*
-graph will be dense 
-
-
-*/
-
-
 
 // graph
 struct graph {
@@ -53,7 +46,6 @@ bool validVertex(Graph g, Vertex v);
 
 // print graph;
 void printGraph(Graph g);
-
 
 
 #endif

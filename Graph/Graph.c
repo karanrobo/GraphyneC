@@ -1,23 +1,5 @@
 #include "Graph.h"
 
-
-
-
-// graph
-struct graph {
-    struct node **v; // pointer to array of pointers 
-    int vertices;
-
-};
-
-// graph rep adjacency list 
-struct node {
-    struct node *next;
-    Vertex vx;
-    int value;
-};
- 
-
 // initialise graph
 Graph newGraph(int vertices) {
     struct graph* g = malloc(sizeof(struct graph));
@@ -101,14 +83,12 @@ Graph insertEdge(Graph g, Vertex v, Vertex w) {
 
     struct node *head = g->v[v];
     struct node *new = newNode(w, 0);
-
+    if (head != NULL) {
+        new->next = head;
+    } 
     
     g->v[v] = new;
     
-    if (head != NULL) {
-        new->next = head->next;
-    } 
-
 
     return g;
 }
