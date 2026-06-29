@@ -11,9 +11,9 @@ int main() {
     int sh = 720;
     InitWindow(sw, sh, "Graphyne Version:0.01");
     SetWindowState(FLAG_WINDOW_RESIZABLE);
-    SetTargetFPS(1200);
+    //SetTargetFPS(0);
     
-    GraphV gv = test_graph(20);
+    GraphV gv = test_graph(10);
     
     int arr[] = {784/8,128/8,64/8,10};
     //int arr[] = {40,20,10,5};
@@ -25,9 +25,9 @@ int main() {
     AOEV av = adlToAoe(gv);
 
     float C = 100000000;
-    float k = 0.7;
-
+    float k = 5;
     float radius = 20;
+    float drag_constant = 6.0;
 
     //gv->N[0].velocity = (Vector2){12.0f, 12.0f};
     while (!WindowShouldClose()) {  
@@ -36,54 +36,62 @@ int main() {
 
         BeginDrawing();
         ClearBackground(RAYWHITE);
+        
+        //graphLine(gv, (Vector2){200,200},(Vector2){30 + 50, 30 + 50}, radius, 0);
+        graphCircular(gv, (Vector2){200,200}, BALL_FONT, 50);
         //drawNNrepEngine(arrv, arr, len_arr);
+        //dragNode(gv, mouse, radius);
+        // updateElectrostaticSpringForce(gv,av,C,k);
+        // applyDrag(gv, dt, drag_constant);
+        // updateLoopIntegral(gv, dt);
+        
         
         // force on ball i due to j
         // float lenPID_before = 0;
-        for (int i = 0; i < gv->g->vertices; i++) {
-            if (CheckCollisionPointCircle(mouse, gv->N[i].displacement, radius) && IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
-                gv->N[i].displacement.x = mouse.x;
-                gv->N[i].displacement.y = mouse.y;
-            }
-        }
+        // for (int i = 0; i < gv->g->vertices; i++) {
+        //     if (CheckCollisionPointCircle(mouse, gv->N[i].displacement, radius) && IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+        //         gv->N[i].displacement.x = mouse.x;
+        //         gv->N[i].displacement.y = mouse.y;
+        //     }
+        // }
 
-        for (int i = 0; i < gv->g->vertices; i++) {
-            float netXF = 0;
-            float netYF = 0;
-            for (int j = 0; j < gv->g->vertices; j++) {
-                if (i != j) { 
-                    // F = 1/r^2, O <----> O repulsion, O >----< O attraction 
-                    /*
-                        O
-                          .
-                           .
-                            .
-                             O
-                    */
-                    float kx = gv->N[i].displacement.x - gv->N[j].displacement.x;
-                    float ky = gv->N[i].displacement.y - gv->N[j].displacement.y;
-                    float dist = sqrtf(kx*kx + ky*ky);
+        // for (int i = 0; i < gv->g->vertices; i++) {
+        //     float netXF = 0;
+        //     float netYF = 0;
+        //     for (int j = 0; j < gv->g->vertices; j++) {
+        //         if (i != j) { 
+        //             // F = 1/r^2, O <----> O repulsion, O >----< O attraction 
+        //             /*
+        //                 O
+        //                   .
+        //                    .
+        //                     .
+        //                      O
+        //             */
+        //             float kx = gv->N[i].displacement.x - gv->N[j].displacement.x;
+        //             float ky = gv->N[i].displacement.y - gv->N[j].displacement.y;
+        //             float dist = sqrtf(kx*kx + ky*ky);
                 
-                    float distsq = kx*kx + ky*ky;
-                    float xu = kx/dist;
-                    float yu = ky/dist;
-                    float lenf = av->edges[i][j].len;
-                    float force1 = 0;
+        //             float distsq = kx*kx + ky*ky;
+        //             float xu = kx/dist;
+        //             float yu = ky/dist;
+        //             float lenf = av->edges[i][j].len;
+        //             float force1 = 0;
 
-                    if (lenf != -1) {
-                        force1 = (lenf == -1) ? 0 : -5*k * (dist - lenf/2);
-                    }
+        //             if (lenf != -1) {
+        //                 force1 = (lenf == -1) ? 0 : -5*k * (dist - lenf/2);
+        //             }
                     
-                    float force2 = C/(distsq);
+        //             float force2 = C/(distsq);
 
-                    netXF += xu * (force1 + force2); 
-                    netYF += yu * (force1 + force2); 
-                }
-            }
+        //             netXF += xu * (force1 + force2); 
+        //             netYF += yu * (force1 + force2); 
+        //         }
+        //     }
 
-            gv->N[i].accleration.x = netXF;
-            gv->N[i].accleration.y = netYF;
-        }
+        //     gv->N[i].accleration.x = netXF;
+        //     gv->N[i].accleration.y = netYF;
+        // }
 
         // float lenPID_after = 0;
         // for (int i = 0; i < gv->g->vertices; i++)
@@ -138,23 +146,23 @@ int main() {
         // }
 
         // drag V = -kV
-        for (int i = 0; i < gv->g->vertices; i++) {
-            gv->N[i].velocity.x += -(5.9 * gv->N[i].velocity.x) * dt;
-            gv->N[i].velocity.y += -(5.9 * gv->N[i].velocity.y) * dt;            
-        }
+        // for (int i = 0; i < gv->g->vertices; i++) {
+        //     gv->N[i].velocity.x += -(5.9 * gv->N[i].velocity.x) * dt;
+        //     gv->N[i].velocity.y += -(5.9 * gv->N[i].velocity.y) * dt;            
+        // }
 
         
 
-        for (int i = 0; i < gv->g->vertices; i++) {
-            gv->N[i].velocity.x += gv->N[i].accleration.x * dt;
-            gv->N[i].velocity.y += gv->N[i].accleration.y * dt;
+        // for (int i = 0; i < gv->g->vertices; i++) {
+        //     gv->N[i].velocity.x += gv->N[i].accleration.x * dt;
+        //     gv->N[i].velocity.y += gv->N[i].accleration.y * dt;
 
-            gv->N[i].displacement.x += (gv->N[i].velocity.x) * dt;
-            gv->N[i].displacement.y += (gv->N[i].velocity.y) * dt;
-        }
-
+        //     gv->N[i].displacement.x += (gv->N[i].velocity.x) * dt;
+        //     gv->N[i].displacement.y += (gv->N[i].velocity.y) * dt;
+        // }
 
         graphRendered(gv, (Vector2){200,200},(Vector2){30 + 50, 30 + 50}, radius, BALL_FONT);
+        //graphBezierConnection(gv, (Vector2){200,200},(Vector2){30 + 50, 30 + 50}, radius, BALL_FONT, 1);
         EndDrawing();
     }
 

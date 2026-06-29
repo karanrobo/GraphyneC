@@ -3,11 +3,27 @@
 
 
 AOEV adlToAoe(GraphV gv) {
-    AOEV av = malloc(sizeof(struct arrayOfEdgesV));
+
     int verts = gv->g->vertices;
 
+    int width = (int)sqrtf(1.0*verts);
+    int row_jump = 0;
+    int xd = 5000/verts;
+    for (int i = 0; i < verts; i++) {
+        //gv->N[i] = (Prop){.displacement = (Vector2){GetRandomValue(200, 1000),GetRandomValue(200, 1000)}, (Vector2){0,0}, (Vector2){0,0}};
+        //.velocity = {GetRandomValue(-10,10),GetRandomValue(-10,10)}, .accleration = {GetRandomValue(-10,10),GetRandomValue(-10,10)}};
+        int md = i % width;
+        if (md == 0) {
+            row_jump++;
+        }
+        gv->N[i] = (Prop){.displacement = (Vector2){300 + md * xd , 100 + md + xd * row_jump}, (Vector2){0,0}, (Vector2){0,0}};
+    }
+
+    AOEV av = malloc(sizeof(struct arrayOfEdgesV));
+    
+
     int edges = 0;
-    for (int i = 0; i < gv->g->vertices; i++) {
+    for (int i = 0; i < verts; i++) {
         Adjnode cn = gv->g->v[i];
         for (; cn != NULL; cn = cn->next) {
             edges++;
@@ -25,7 +41,7 @@ AOEV adlToAoe(GraphV gv) {
         }
     }
 
-    for (int i = 0; i < gv->g->vertices; i++) {
+    for (int i = 0; i < verts; i++) {
         Adjnode cn = gv->g->v[i];
         for (; cn != NULL; cn = cn->next) {
             int j = cn->vx; 
@@ -117,12 +133,15 @@ GraphV test_graph(int num_nodes) {
     // representation scheme
     // NN, circular, adaptive(electromagnetic repulsion)
     // int cont = 0;
-    for (int i = 0; i < gv->g->vertices; i++) {
-        gv->N[i] = (Prop){.displacement = (Vector2){GetRandomValue(200, 1000),GetRandomValue(200, 1000)}, (Vector2){0,0}, (Vector2){0,0}};
-        //.velocity = {GetRandomValue(-10,10),GetRandomValue(-10,10)}, .accleration = {GetRandomValue(-10,10),GetRandomValue(-10,10)}};
-        //gv->N[i] = (Prop){.displacement = (Vector2){200 + i*5, 200 + i*5}, (Vector2){0,0}, (Vector2){0,0}};
-       
+
+    
+
+    for (int i = 0; i < gv->g->vertices; i++)
+    {
+        gv->N[i] = (Prop){.displacement = (Vector2){0,0}, (Vector2){0,0}, (Vector2){0,0}};
     }
+    
+
     // for spacing out: (Vector2){i*150 + 100,GetRandomValue(300, 400)}
     // gv->g = insertEdge(gv->g, 0, 1);
     // gv->g = insertEdge(gv->g, 1, 2);
@@ -183,4 +202,125 @@ int graphRendered(GraphV gv, Vector2 offset, Vector2 start, float radius, int BA
 
     }
     return 1;
+}
+
+void graphLine(GraphV gv, Vector2 offset, Vector2 start, int BALL_FONT, int orientation) {
+    for (int i = 0; i < gv->g->vertices; i++) {
+        if (orientation == 0) {
+            gv->N[i].displacement = (Vector2) {start.x*i + offset.x , start.y + offset.y};
+        } else {
+            gv->N[i].displacement = (Vector2) {start.x + offset.x , start.y*i + offset.y};
+        }
+    }
+}
+
+void graphCircular(GraphV gv, Vector2 offset, int BALL_FONT, float scaler) {
+    // goto that node offset the, calcualte x = rcos(theta/n), y = rsin(theta/n)
+    int n = gv->g->vertices;
+    // r theta -> circumference 
+    float val = 2*PI/n;
+    float r = scaler / val;
+    for (int i = 0; i < gv->g->vertices; i++) {
+        float x = r * cosf(val * i) + offset.x;
+        float y = r * sinf(val * i) + offset.y;
+        gv->N[i].displacement = (Vector2) {x, y};
+    }
+}
+
+
+int graphBezierConnection(GraphV gv, Vector2 offset, Vector2 start, float radius, int BALL_FONT, int alternate) {
+    for (int i = 0; i < gv->g->vertices; i++) {
+        Prop curr = gv->N[i];
+        Adjnode cn = gv->g->v[i];
+        for (; cn != NULL; cn = cn->next) {
+            // from curr to location of others
+            //DrawLine(curr.displacement.x, gv->N[cn->vx].displacement.x, 5, RED);
+            //DrawCircleLines(curr.x, gv->N[cn->vx].y, 5, RED);
+            Prop start = curr;
+            Prop end = gv->N[cn->vx];
+            int polarity = (alternate == 1) ? 100*(i - cn->vx)*pow((-1), i) : 0;
+            Vector2 avg = (Vector2){(start.displacement.x + end.displacement.x)/2.0f, (start.displacement.y + end.displacement.y)/2.0f + polarity};
+
+            //DrawLine(start.displacement.x, start.displacement.y, end.displacement.x, end.displacement.y, RED);
+            // DrawCircle(start.displacement.x, start.displacement.y, 10, BLUE);
+            // DrawCircle(avg.x, avg.y, 10, BLUE);
+            // DrawCircle(end.displacement.x, end.displacement.y, 10, BLUE);
+            Vector2 v[] = {curr.displacement, avg, end.displacement};
+            DrawSplineBezierQuadratic(v, 3, 3, RED);
+            //DrawTriangle((Vector2){end.displacement.x - 40, end.displacement.y - 40}, end.displacement, (Vector2){end.displacement.x + 40, end.displacement.y + 40}, RED);
+            
+        }
+
+        DrawCircle(curr.displacement.x, curr.displacement.y, radius, BLACK);
+        DrawText(TextFormat("%d", i), curr.displacement.x - BALL_FONT/2, curr.displacement.y - BALL_FONT/2, BALL_FONT, WHITE);
+
+    }
+    return 1;
+}
+
+
+
+
+void dragNode(GraphV gv, Vector2 mouse, float radius) {
+    for (int i = 0; i < gv->g->vertices; i++) {
+        if (CheckCollisionPointCircle(mouse, gv->N[i].displacement, radius) && IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+            gv->N[i].displacement.x = mouse.x;
+            gv->N[i].displacement.y = mouse.y;
+        }
+    }
+}
+
+void updateElectrostaticSpringForce(GraphV gv, AOEV av, float C, float k) {
+    for (int i = 0; i < gv->g->vertices; i++) {
+        float netXF = 0;
+        float netYF = 0;
+        for (int j = 0; j < gv->g->vertices; j++) {
+            if (i != j) { 
+                // F = 1/r^2, O <----> O repulsion, O >----< O attraction 
+                /*
+                    O
+                        .
+                        .
+                        .
+                            O
+                */
+                float kx = gv->N[i].displacement.x - gv->N[j].displacement.x;
+                float ky = gv->N[i].displacement.y - gv->N[j].displacement.y;
+                float dist = sqrtf(kx*kx + ky*ky);
+            
+                float distsq = kx*kx + ky*ky;
+                float xu = kx/dist;
+                float yu = ky/dist;
+                float lenf = av->edges[i][j].len;
+               
+                float force1 = (lenf == -1) ? 0 : -k * (dist - lenf/2);
+                
+                
+                float force2 = C/(distsq);
+
+                netXF += xu * (force1 + force2); 
+                netYF += yu * (force1 + force2); 
+            }
+        }
+
+        gv->N[i].accleration.x = netXF;
+        gv->N[i].accleration.y = netYF;
+    }
+}
+
+void applyDrag(GraphV gv, float dt, float drag_constant) {
+    for (int i = 0; i < gv->g->vertices; i++) {
+        gv->N[i].velocity.x -= (drag_constant * gv->N[i].velocity.x) * dt;
+        gv->N[i].velocity.y -= (drag_constant * gv->N[i].velocity.y) * dt;            
+    }
+}
+
+void updateLoopIntegral(GraphV gv, float dt) {
+    for (int i = 0; i < gv->g->vertices; i++) {
+        gv->N[i].velocity.x += gv->N[i].accleration.x * dt;
+        gv->N[i].velocity.y += gv->N[i].accleration.y * dt;
+
+        gv->N[i].displacement.x += (gv->N[i].velocity.x) * dt;
+        gv->N[i].displacement.y += (gv->N[i].velocity.y) * dt;
+    }
 }
