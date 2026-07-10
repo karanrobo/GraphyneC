@@ -16,6 +16,21 @@ typedef struct node *Adjnode;
 typedef struct edgeV EdgeV;
 typedef struct arrayOfEdgesV *AOEV;
 
+typedef enum graphType;
+typedef enum lineType;
+
+enum graphType {
+    LINEAR,
+    CIRCULAR,
+    FORCE_DIREC
+};
+
+enum lineType {
+    STRAIGHT,
+    BEZIER_CUBIC,
+};
+
+
 struct prop {
     Vector2 displacement;
     Vector2 velocity;

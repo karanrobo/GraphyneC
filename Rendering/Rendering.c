@@ -5,7 +5,6 @@
 AOEV adlToAoe(GraphV gv) {
 
     int verts = gv->g->vertices;
-
     int width = (int)sqrtf(1.0*verts);
     int row_jump = 0;
     int xd = 5000/verts;
@@ -276,14 +275,7 @@ void updateElectrostaticSpringForce(GraphV gv, AOEV av, float C, float k) {
         float netYF = 0;
         for (int j = 0; j < gv->g->vertices; j++) {
             if (i != j) { 
-                // F = 1/r^2, O <----> O repulsion, O >----< O attraction 
-                /*
-                    O
-                        .
-                        .
-                        .
-                            O
-                */
+                
                 float kx = gv->N[i].displacement.x - gv->N[j].displacement.x;
                 float ky = gv->N[i].displacement.y - gv->N[j].displacement.y;
                 float dist = sqrtf(kx*kx + ky*ky);
