@@ -16,19 +16,19 @@ typedef struct node *Adjnode;
 typedef struct edgeV EdgeV;
 typedef struct arrayOfEdgesV *AOEV;
 
-typedef enum graphType;
-typedef enum lineType;
+// typedef enum graphType;
+// typedef enum lineType;
 
-enum graphType {
-    LINEAR,
-    CIRCULAR,
-    FORCE_DIREC
-};
+// enum graphType {
+//     LINEAR,
+//     CIRCULAR,
+//     FORCE_DIREC
+// };
 
-enum lineType {
-    STRAIGHT,
-    BEZIER_CUBIC,
-};
+// enum lineType {
+//     STRAIGHT,
+//     BEZIER_CUBIC,
+// };
 
 
 struct prop {
@@ -54,8 +54,12 @@ struct arrayOfEdgesV {
 };
 
 
+enum init_type_fg {
+    RANDOM,
+    SQUARE,
+};
 
-AOEV adlToAoe(GraphV gv);
+AOEV adlToAoe(GraphV gv, enum init_type_fg in, Vector2 bounds);
 
 
 Vector2 **neuralNetworkRepEngine(int *placement_arr, int nodes, Rectangle dims, Vector2 padding);

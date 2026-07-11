@@ -2,20 +2,24 @@
 
 
 
-AOEV adlToAoe(GraphV gv) {
-
+AOEV adlToAoe(GraphV gv, enum init_type_fg in, Vector2 bounds) {
     int verts = gv->g->vertices;
-    int width = (int)sqrtf(1.0*verts);
-    int row_jump = 0;
-    int xd = 5000/verts;
-    for (int i = 0; i < verts; i++) {
-        //gv->N[i] = (Prop){.displacement = (Vector2){GetRandomValue(200, 1000),GetRandomValue(200, 1000)}, (Vector2){0,0}, (Vector2){0,0}};
-        //.velocity = {GetRandomValue(-10,10),GetRandomValue(-10,10)}, .accleration = {GetRandomValue(-10,10),GetRandomValue(-10,10)}};
-        int md = i % width;
-        if (md == 0) {
-            row_jump++;
+
+    if (in == RANDOM) {
+        for (int i = 0; i < verts; i++) {
+            gv->N[i] = (Prop){.displacement = (Vector2){GetRandomValue(bounds.x, bounds.y),GetRandomValue(bounds.x, bounds.y)}, (Vector2){0,0}, (Vector2){0,0}};
         }
-        gv->N[i] = (Prop){.displacement = (Vector2){300 + md * xd , 100 + md + xd * row_jump}, (Vector2){0,0}, (Vector2){0,0}};
+    } else {
+        int width = (int)sqrtf(1.0*verts);
+        int row_jump = 0;
+        int xd = 5000/verts;
+        for (int i = 0; i < verts; i++) {
+            int md = i % width;
+            if (md == 0) {
+                row_jump++;
+            }
+            gv->N[i] = (Prop){.displacement = (Vector2){bounds.x + md * xd , bounds.y + md + xd * row_jump}, (Vector2){0,0}, (Vector2){0,0}};
+        }
     }
 
     AOEV av = malloc(sizeof(struct arrayOfEdgesV));
@@ -200,7 +204,7 @@ int graphRendered(GraphV gv, Vector2 offset, Vector2 start, float radius, int BA
         }
 
     }
-    return 1;
+    return 0;
 }
 
 void graphLine(GraphV gv, Vector2 offset, Vector2 start, int BALL_FONT, int orientation) {

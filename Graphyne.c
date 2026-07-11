@@ -14,15 +14,17 @@ int main() {
     //SetTargetFPS(0);
     
     GraphV gv = test_graph(10);
+    GraphV gc = test_graph(20);
     
-    int arr[] = {784/8,128/8,64/8,10};
+    int arr[] = {78,12,6,1};
     //int arr[] = {40,20,10,5};
     
     int len_arr = sizeof(arr)/sizeof(arr[0]);
     Vector2 **arrv = neuralNetworkRepEngine(arr, len_arr, (Rectangle){50, 50, 1080, 720}, (Vector2){10, 10});
     // rest len:
 
-    AOEV av = adlToAoe(gv);
+    
+    AOEV ac = adlToAoe(gc, RANDOM, (Vector2){100, 500});
 
     float C = 100000000;
     float k = 5;
@@ -37,13 +39,15 @@ int main() {
         BeginDrawing();
         ClearBackground(RAYWHITE);
         
-        //graphLine(gv, (Vector2){200,200},(Vector2){30 + 50, 30 + 50}, radius, 0);
-        graphCircular(gv, (Vector2){200,200}, BALL_FONT, 50);
-        //drawNNrepEngine(arrv, arr, len_arr);
-        //dragNode(gv, mouse, radius);
-        // updateElectrostaticSpringForce(gv,av,C,k);
-        // applyDrag(gv, dt, drag_constant);
-        // updateLoopIntegral(gv, dt);
+        graphCircular(gv, (Vector2){1500,200}, BALL_FONT, 50);
+        drawNNrepEngine(arrv, arr, len_arr);
+        
+        
+        // graphCircular(gc, (Vector2){1500,100}, BALL_FONT, 50);
+        dragNode(gc, mouse, radius);
+        updateElectrostaticSpringForce(gc,ac,C,k);
+        applyDrag(gc, dt, drag_constant);
+        updateLoopIntegral(gc, dt);
         
         
         // force on ball i due to j
@@ -162,6 +166,9 @@ int main() {
         // }
 
         graphRendered(gv, (Vector2){200,200},(Vector2){30 + 50, 30 + 50}, radius, BALL_FONT);
+
+        graphRendered(gc, (Vector2){500,500},(Vector2){30 + 50, 30 + 50}, radius, BALL_FONT);
+        //graphRendered(gc, (Vector2){200,200},(Vector2){30 + 50, 30 + 50}, radius, BALL_FONT);
         //graphBezierConnection(gv, (Vector2){200,200},(Vector2){30 + 50, 30 + 50}, radius, BALL_FONT, 1);
         EndDrawing();
     }
