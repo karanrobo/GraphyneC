@@ -20,9 +20,6 @@ int main() {
     
     int len_arr = sizeof(arr)/sizeof(arr[0]);
     Vector2 **arrv = neuralNetworkRepEngine(arr, len_arr, (Rectangle){50, 50, 1080, 720}, (Vector2){10, 10});
-  
-
-    
     RLM ac = forceGraphInit(gc, RANDOM, (Vector2){100, 500});
 
     float C = 100000000;
