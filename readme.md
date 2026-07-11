@@ -141,5 +141,5 @@ If your Raylib folder is stored somewhere else, update `RAYLIB_DIR` in `mk.mak`.
 ## Preview
 
 > Add a GIF or screenshot here
-![Image showing examples of rendering](C:\Users\karan\Desktop\CompUni\Major Projects\GraphyneC\graphyneExample.png)
+![Image showing examples of rendering](graphyneExample.png)
 ---
