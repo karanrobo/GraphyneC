@@ -14,7 +14,7 @@ typedef struct prop Prop;
 typedef struct node *Adjnode; 
 
 typedef struct edgeV EdgeV;
-typedef struct arrayOfEdgesV *AOEV;
+typedef struct restLengthMatrix *RLM;
 
 // typedef enum graphType;
 // typedef enum lineType;
@@ -48,9 +48,10 @@ struct edgeV {
     float len;
 };
 
-struct arrayOfEdgesV {
+struct restLengthMatrix {
     EdgeV **edges;
     int num_edges;
+    int verts;
 };
 
 
@@ -59,8 +60,8 @@ enum init_type_fg {
     SQUARE,
 };
 
-AOEV adlToAoe(GraphV gv, enum init_type_fg in, Vector2 bounds);
-
+RLM forceGraphInit(GraphV gv, enum init_type_fg in, Vector2 bounds);
+void freeRLM(RLM rg);
 
 Vector2 **neuralNetworkRepEngine(int *placement_arr, int nodes, Rectangle dims, Vector2 padding);
 void drawNNrepEngine(Vector2 **arr, int *placement_arr, int nodes);
@@ -68,13 +69,9 @@ void freeNN(Vector2 **arr, int nodes);
 
 
 GraphV test_graph(int num_nodes);
-
 void graphLine(GraphV gv, Vector2 offset, Vector2 start, int BALL_FONT, int orientation);
-
 void graphCircular(GraphV gv, Vector2 offset, int BALL_FONT, float auto_radius);
-
 int graphBezierConnection(GraphV gv, Vector2 offset, Vector2 start, float radius, int BALL_FONT, int alternate);
-
 int graphRendered(GraphV gv, Vector2 offset, Vector2 start, float radius, int BALL_FONT);
 
 // update functions
@@ -83,9 +80,10 @@ int graphRendered(GraphV gv, Vector2 offset, Vector2 start, float radius, int BA
  * Api for updating the state of the graph
  * Calcualte forces, and update electrostatic/spring parameters
  */
+
 void dragNode(GraphV gv, Vector2 mouse, float radius);
 
-void updateElectrostaticSpringForce(GraphV gv, AOEV av, float C, float k);
+void updateElectrostaticSpringForce(GraphV gv, RLM av, float C, float k);
 
 void applyDrag(GraphV gv, float dt, float drag_constant) ;
 

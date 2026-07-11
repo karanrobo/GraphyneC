@@ -2,7 +2,7 @@
 
 
 
-AOEV adlToAoe(GraphV gv, enum init_type_fg in, Vector2 bounds) {
+RLM forceGraphInit(GraphV gv, enum init_type_fg in, Vector2 bounds) {
     int verts = gv->g->vertices;
 
     if (in == RANDOM) {
@@ -22,9 +22,7 @@ AOEV adlToAoe(GraphV gv, enum init_type_fg in, Vector2 bounds) {
         }
     }
 
-    AOEV av = malloc(sizeof(struct arrayOfEdgesV));
-    
-
+    RLM av = malloc(sizeof(struct restLengthMatrix));
     int edges = 0;
     for (int i = 0; i < verts; i++) {
         Adjnode cn = gv->g->v[i];
@@ -34,7 +32,6 @@ AOEV adlToAoe(GraphV gv, enum init_type_fg in, Vector2 bounds) {
     }
     
     av->num_edges = edges;
-
     EdgeV **ed = malloc(sizeof(struct edgeV *) * verts);
     // not the edge lenght but initial lengths
     for (int i = 0; i < verts; i++) {
@@ -55,11 +52,19 @@ AOEV adlToAoe(GraphV gv, enum init_type_fg in, Vector2 bounds) {
     }
 
     av->edges = ed;
+    av->verts = verts;
 
     return av;
 }
 
-
+void freeRLM(RLM rg) {
+    // free 
+    for (int i = 0; i < rg->verts; i++) {
+        free(rg->edges[i]);
+    }
+    free(rg->edges);
+    free(rg);
+}
 
 void freeNN(Vector2 **arr, int nodes) {
     for (int i = 0; i < nodes; i++) {
@@ -273,7 +278,7 @@ void dragNode(GraphV gv, Vector2 mouse, float radius) {
     }
 }
 
-void updateElectrostaticSpringForce(GraphV gv, AOEV av, float C, float k) {
+void updateElectrostaticSpringForce(GraphV gv, RLM av, float C, float k) {
     for (int i = 0; i < gv->g->vertices; i++) {
         float netXF = 0;
         float netYF = 0;
