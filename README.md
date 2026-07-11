@@ -105,6 +105,17 @@ The graph uses an **adjacency list**, suitable for sparse graphs and efficient t
 
 - [Raylib](https://www.raylib.com/) — graphics and rendering library
 
+## How to Run
+
+The project entry point is `Graphyne.c`, so once the executable is built you can run it directly.
+
+1. Make sure the Raylib folder sits next to this repository as `../raylib-5.5_win64_mingw-w64`.
+2. Open a terminal in the `GraphyneC` folder.
+3. Build the project with `mingw32-make -f mk.mak`.
+4. Run the program with `./graphyne.exe`.
+
+If your Raylib folder is stored somewhere else, update `RAYLIB_DIR` in `mk.mak`.
+
 ---
 
 ## Design Goals
@@ -128,7 +139,8 @@ The graph uses an **adjacency list**, suitable for sparse graphs and efficient t
 ---
 
 ## Preview
+![Gif showing examples of rendering and interaction real time](demo.gif)
+![Image showing examples of rendering](graphyneExample.png)
 
-> Add a GIF or screenshot here
 
 ---
